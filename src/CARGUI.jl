@@ -113,8 +113,10 @@ function canvas_button1release(widget, event, state)
     end
 end
 function create_canvas(state)
-    local c = @Canvas(600,600)
-
+    local c = @Canvas(1600,1600)
+    local s = ScrolledWindow()
+    Gtk.GAccessor.size_request(s,700,600)
+    push!(s,c)
     c.mouse.button1press = (w,e)->canvas_buttonpress(w,e,state)
     c.mouse.button1release = (w,e)->canvas_button1release(w,e,state)
     c.mouse.button1motion = (w,e)->canvas_mousemove(w,e,state)
@@ -122,7 +124,7 @@ function create_canvas(state)
     c.mouse.button2release = (w,e)->canvas_button2press(w,e,state)
     draw(canvas -> draw_scene(canvas, state), c)
     state.widgets["canvas"] = c
-    return c
+    return s
 end
 function clear_screen(canvas)
     local ctx = getgc(canvas)
