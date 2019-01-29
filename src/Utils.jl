@@ -16,16 +16,16 @@ function angle(v::Vector)
 	return ang
 end
 function intersection(line1, line2)
-  const p = line1[1]
-  const r = line1[2]-line1[1]
-  const q = line2[1]
-  const s = line2[2]-line2[1]
-  const r_s = cross2D(r, s);
-  const q_p_r = cross2D(q-p, r);
+    p = line1[1]
+    r = line1[2]-line1[1]
+   q = line2[1]
+   s = line2[2]-line2[1]
+   r_s = cross2D(r, s);
+   q_p_r = cross2D(q-p, r);
 
   if (abs(r_s)<0.000001 && abs(q_p_r)<0.0000001)
-    const t1 = dot(q+(s-p), r) / dot(r, r);
-    const t0 = t1 - dot(s, r) / dot(r, r);
+     t1 = dot(q+(s-p), r) / dot(r, r);
+     t0 = t1 - dot(s, r) / dot(r, r);
     if (t0 >= 0 && t0 <= 1 || t1 >= 0 && t1 <= 1)
       return (true, t0, t1)
    end
@@ -35,8 +35,8 @@ function intersection(line1, line2)
 	if ((r_s)<0.0000001 && !(q_p_r<0.0000001))
     	return (false,0 ,0)
 	end
-  	const t = cross2D(q-p, s) / cross2D(r, s);
- 	const u = cross2D(q-p, r) / cross2D(r, s);
+  	 t = cross2D(q-p, s) / cross2D(r, s);
+ 	 u = cross2D(q-p, r) / cross2D(r, s);
     if (!(abs(r_s)<0.0000001) && t >= 0 && t <= 1 && u >= 0 && u <= 1)
 	    return (true, t,u)
 	end

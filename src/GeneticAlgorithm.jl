@@ -1,4 +1,4 @@
-type GeneticAlgorithmState
+struct GeneticAlgorithmState
     tournament_proportion::Float64
     crossover_probability::Float64
     iteration::Integer

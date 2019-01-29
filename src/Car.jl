@@ -1,5 +1,5 @@
 include("Utils.jl")
-type FFNN
+struct FFNN
     layers::Vector{Matrix}
 end
 function FFNN(layers_size::Vector{<:Integer})
@@ -26,7 +26,7 @@ end
 const car_width = 14
 const car_height  = 24
 
-type Car
+struct Car
     nn::FFNN
     pos::Vector
     dir::Vector
@@ -152,7 +152,7 @@ function advance(car::Car, dt::Float64, w)
 	car.dir  = rotation_matrix(e[3])*car.dir
 
 end
-type TrackPoint
+struct TrackPoint
     pos::Vector
     road_limits::Pair{Vector,Vector}
 	dir::Vector
@@ -192,7 +192,7 @@ function update_road_limits(t::TrackPoint, p_prev::Vector, p_next::Vector)
     t.road_limits= Pair{Vector,Vector}(pos+ v*t.width, pos - v*t.width)
 	t.dir  = dir1
 end
-type Track
+struct Track
     points::Vector{TrackPoint}
     lines::Vector
 end
@@ -242,7 +242,7 @@ function find_points(t::Track, pos::Vector)
     end
 end
 
-type World
+struct World
     track::Track
     cars::Vector{Car}
 end

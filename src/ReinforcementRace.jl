@@ -1,7 +1,13 @@
+module Reinforcement
+export  GeneticAlgorithmState,
+    World,
+    GUIState,
+    create_window
+
 using Gtk.ShortNames, Graphics
 include("Car.jl")
 include("GeneticAlgorithm.jl")
-type GUIState
+struct GUIState
     world::World
     is_dragging::Bool
     current_vertex
@@ -216,8 +222,4 @@ function create_window(state)
 
     showall(win)
 end
-
-ga_state = GeneticAlgorithmState(0.7, 0.9)
-world = World(ncars = 50)
-state = GUIState(ga_state, world)
-create_window(state)
+end
