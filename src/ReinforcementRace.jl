@@ -7,7 +7,7 @@ using Gtk
 using Gtk.ShortNames, Graphics
 include("Car.jl")
 include("GeneticAlgorithm.jl")
-struct GUIState
+mutable struct GUIState
     world::World
     is_dragging::Bool
     current_vertex
@@ -206,9 +206,9 @@ function draw_scene(canvas, state::GUIState)
 	clear_screen(canvas)
     save(ctx)
 	draw(canvas, state.world.track, state)
-    if length(world.track.points) > 0
-        for car in world.cars
-			draw(canvas, car,state)
+    if length(state.world.track.points) > 0
+        for car in state.world.cars
+	    draw(canvas, car,state)
         end
     end
     restore(ctx)

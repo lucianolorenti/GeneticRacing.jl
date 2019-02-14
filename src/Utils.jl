@@ -9,7 +9,7 @@ function rotation_matrix(ang::T) where T<:Number
 end
 import Base.angle
 function angle(v::Vector)
-	local ang = atan2(v[2],v[1]) - atan2(0,1) + pi/2
+	local ang = atan(v[2],v[1]) - atan(0,1) + pi/2
     if ang<0
         ang=ang+2*pi
     end

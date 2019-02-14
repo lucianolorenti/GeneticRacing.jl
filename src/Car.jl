@@ -1,5 +1,5 @@
 include("Utils.jl")
-struct FFNN
+mutable struct FFNN
     layers::Vector{Matrix}
 end
 function FFNN(layers_size::Vector{<:Integer})
@@ -26,15 +26,14 @@ end
 const car_width = 14
 const car_height  = 24
 
-struct Car
+mutable struct Car
     nn::FFNN
     pos::Vector
     dir::Vector
     crash::Bool
     fitness::Float64
-	best_fitness::Float64
-	it_best_fitness::Integer
-
+    best_fitness::Float64
+    it_best_fitness::Integer
     intersection::Vector # Debug information
     collision_point
 end
