@@ -1,8 +1,7 @@
 name = "ReinforcementRace"
-uuid = "137bc462-23be-11e9-1f13-43a2532b2fa8"
-authors = ["lucianolorenti <lucianolorenti@gmail.com>"]
+uuid = "dd04acb2-308f-11e9-02a6-3d55b75ff8e2"
+authors = ["Luciano Lorenti <luciano.lorenti@jampp.com>"]
 version = "0.1.0"
 
 [deps]
-Graphics = "a2bd30eb-e257-5431-a919-1863eab51364"
 Gtk = "4c0ca9eb-093a-5379-98c5-f87ac0bbbf44"
