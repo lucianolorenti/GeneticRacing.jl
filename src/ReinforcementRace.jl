@@ -1,9 +1,9 @@
-module Reinforcement
+module ReinforcementRace
 export  GeneticAlgorithmState,
     World,
     GUIState,
     create_window
-
+using Gtk
 using Gtk.ShortNames, Graphics
 include("Car.jl")
 include("GeneticAlgorithm.jl")
@@ -26,7 +26,7 @@ function update_canvas(s::GUIState)
 end
 function label_width_changed(widget, state)
     try
-        str = getproperty(widget,:text,String)
+        str = get_gtk_property(widget,:text,String)
         if (state.current_vertex != nothing)
             local num = parse(str)
             if (num==nothing)
@@ -56,7 +56,7 @@ function create_toolbar(state)
     hbox = Box(:h)
     label_width = Entry()  # a widget for entering text
     signal_connect((w)->label_width_changed(w,state), label_width, "changed")
-    setproperty!(label_width, :text, "")
+    set_gtk_property!(label_width, :text, "")
 
     state.widgets["label_width"] = label_width
     g = Grid()
@@ -115,7 +115,7 @@ end
 function canvas_button1release(widget, event, state)
     state.is_dragging=false
     if (state.current_vertex!=nothing)
-        setproperty!(state.widgets["label_width"],:text,string(state.current_vertex.width))
+        set_gtk_property!(state.widgets["label_width"],:text,string(state.current_vertex.width))
     end
 end
 function create_canvas(state)
