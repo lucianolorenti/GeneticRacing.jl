@@ -5,6 +5,8 @@ export  GeneticAlgorithmState,
     create_window
 using Gtk
 using Gtk.ShortNames, Graphics
+include("State.jl")
+include("BackPropState.jl")
 include("Car.jl")
 include("GeneticAlgorithm.jl")
 mutable struct GUIState
@@ -13,10 +15,10 @@ mutable struct GUIState
     current_vertex
     widgets::Dict{String,Any}
     timer
-    ga_state::GeneticAlgorithmState
-	debug::Bool
+    ga_state::State
+    debug::Bool
 end
-function GUIState(ga_state::GeneticAlgorithmState, world::World)
+function GUIState(ga_state::State, world::World)
 
     return GUIState(world, false,nothing, Dict{String,Any}(), nothing, ga_state, false)
 end
@@ -42,14 +44,19 @@ function label_width_changed(widget, state)
     end
 end
 function start_race(w,state)
-    state.timer = Timer(timer->advance(state, timer), 0.001, 0.01)
+    state.timer = Timer(timer->advance(state, timer), 0.001, interval=0.01)
 end
 function stop_race(w,state)
     close(state.timer)
 end
 function advance( state::GUIState, timer)
-    step_generation(state.ga_state, state.world)
-	update_canvas(state)
+    println("b")
+    try 
+        step_generation(state.ga_state, state.world)
+        update_canvas(state)
+    catch e
+        println(e)
+    end
 end
 function create_toolbar(state)
 
