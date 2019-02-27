@@ -12,7 +12,7 @@ struct SwapColumnsCrossover <: CrossoverAlgorithm
     probability::Float64
 end
 function state_iteration(state::GeneticAlgorithmState, car, world)
-    car.fitness = fitness(car, world)
+    car.fitness = car_progress(car, world)
     if car.fitness > car.metadata.best_fitness
 	car.metadata.best_fitness = car.fitness
 	car.metadata.it_best_fitness = state.iteration
@@ -106,26 +106,3 @@ end
 function build_car(s::GeneticAlgorithmState)
     return GeneticCar()
 end
-function fitness(c::Car, w)
-    fitness(c.pos, w)
-end
-function fitness(pos::Vector, w)
-    min_dist = Inf
-    min_t = 0
-    min_j = 0
-    j = 0
-    for j=1:length(w.track.points)-1
-        l = (w.track.points[j].pos, w.track.points[j+1].pos)
-        t = dot(pos-l[1], l[2]-l[1])/(norm(l[2]-l[1])^2)
-        t = min(max(t,0),1)
-        nearest_point = l[1] + (l[2]-l[1])*t
-        dist = norm(pos-nearest_point)
-        if dist < min_dist
-            min_dist = dist
-            min_t    = t
-            min_j    = j
-        end
-    end
-    return (min_t+min_j)/(length(w.track.points))
-end
-

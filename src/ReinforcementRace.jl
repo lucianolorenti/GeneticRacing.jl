@@ -183,7 +183,7 @@ function draw(canvas, car::Car, state::GUIState)
 	w=14
 	h=24
 	translate(ctx, pos[1],pos[2])
-	rotate(ctx, angle(car.dir))
+	rotate(ctx, angle(car.vel))
 	rectangle(ctx,-w/2 ,-h/2, w,h)
 	stroke(ctx)
 	restore(ctx)

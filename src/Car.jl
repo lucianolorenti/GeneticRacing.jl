@@ -9,10 +9,12 @@ mutable struct Car
     crash::Bool
     intersection::Vector # Debug information
     collision_point
+    it_best_progress
+    best_progress
     metadata
 end
 function Car(metadata)
-    return Car(zeros(2), zeros(2), false, [], nothing, medatada)
+    return Car(zeros(2), zeros(2), false, [], nothing, 0, 0, metadata)
 end
 rotation_matrices = [rotation_matrix(ang) for ang=-90:15:90]
 function sense(c::Car, w)
@@ -22,7 +24,7 @@ function sense(c::Car, w)
     
     c.intersection=[]
     for j=1:length(rotation_matrices)
-            new_dir =  rotation_matrices[j]*dir
+        new_dir =  rotation_matrices[j]*dir
 	p11= c.pos
    	p12= c.pos + new_dir*100
 	min_dist = Inf
@@ -50,7 +52,7 @@ function sense(c::Car, w)
 end
 function check_collision(c::Car, w)
     lines_points = lines(w.track)
-    α =  angle(c.dir)
+    α =  angle(c.vel / norm(c.vel))
     w_2 = car_width/2
     h_2 = car_height/2
     M=[-w_2 h_2; -w_2 -h_2; w_2 -h_2; w_2 h_2  ]
@@ -96,9 +98,27 @@ function check_collision(c::Car, w)
 		end
 	end
 end
-function advance(car::Car, state, dt::Float64, w)
-    sensor_input = sense(car, w)
-    e = evaluate(car.nn, sensor_input)
-    car.pos = car.pos + dt*e[1:2]*10
-    car.dir = rotation_matrix(e[3])*car.dir
+function car_progress(c::Car, w)
+    car_progress(c.pos, w)
 end
+function car_progress(pos::Vector, w)
+    min_dist = Inf
+    min_t = 0
+    min_j = 0
+    j = 0
+    for j=1:length(w.track.points)-1
+        l = (w.track.points[j].pos, w.track.points[j+1].pos)
+        t = dot(pos-l[1], l[2]-l[1])/(norm(l[2]-l[1])^2)
+        t = min(max(t,0),1)
+        nearest_point = l[1] + (l[2]-l[1])*t
+        dist = norm(pos-nearest_point)
+        if dist < min_dist
+            min_dist = dist
+            min_t    = t
+            min_j    = j
+        end
+    end
+    return (min_t+min_j)/(length(w.track.points))
+end
+
+
