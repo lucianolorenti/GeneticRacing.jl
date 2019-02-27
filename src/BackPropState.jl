@@ -1,5 +1,9 @@
 export BackPropState
 mutable struct BackPropState <: State
+    iteration::Integer
+end
+function BackPropState()
+    return BackPropState(0)
 end
 function create_new_generation(state::BackPropState, world)
     sort_idx = sortperm([car.fitness for car in world.cars], rev=true)

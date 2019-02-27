@@ -1,6 +1,6 @@
 using ReinforcementRace
-ga_state = GeneticAlgorithmState(0.7, 0.9)
-nn_state = BackPropState()
-world = World(ncars = 50)
-state = GUIState(nn_state, world)
+ga_state = GeneticAlgorithmState(0.7, LinearCombinationCrossover())
+pgs = PolicyGradientState(0.5)
+world = World(pgs, ncars = 50)
+state = GUIState(pgs, world)
 create_window(state)

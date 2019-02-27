@@ -69,9 +69,9 @@ version = "0.4.0"
 
 [[Gtk]]
 deps = ["BinDeps", "Cairo", "Compat", "Graphics", "Homebrew", "Libdl", "Reexport", "Serialization", "Test", "WinRPM"]
-git-tree-sha1 = "261bfcf4910db53990f289c1338aa8eb3b89fb44"
+git-tree-sha1 = "dd884c7cbd08c8e370172bdd535d6bea45359537"
 uuid = "4c0ca9eb-093a-5379-98c5-f87ac0bbbf44"
-version = "0.16.4"
+version = "0.16.5"
 
 [[HTTPClient]]
 deps = ["Compat", "LibCURL"]

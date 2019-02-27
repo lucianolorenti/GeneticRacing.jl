@@ -6,8 +6,11 @@ export  GeneticAlgorithmState,
 using Gtk
 using Gtk.ShortNames, Graphics
 include("State.jl")
-include("BackPropState.jl")
 include("Car.jl")
+include("Track.jl")
+include("QLearning.jl")
+include("World.jl")
+include("BackPropState.jl")
 include("GeneticAlgorithm.jl")
 mutable struct GUIState
     world::World
@@ -23,14 +26,14 @@ function GUIState(ga_state::State, world::World)
     return GUIState(world, false,nothing, Dict{String,Any}(), nothing, ga_state, false)
 end
 function update_canvas(s::GUIState)
-    local c = s.widgets["canvas"]
+      c = s.widgets["canvas"]
     draw(c)
 end
 function label_width_changed(widget, state)
     try
         str = get_gtk_property(widget,:text,String)
         if (state.current_vertex != nothing)
-            local num = parse(str)
+              num = parse(str)
             if (num==nothing)
                 num=5
             end
@@ -40,7 +43,6 @@ function label_width_changed(widget, state)
             update_canvas(state)
         end
     catch e
-        println(e)
     end
 end
 function start_race(w,state)
@@ -50,7 +52,6 @@ function stop_race(w,state)
     close(state.timer)
 end
 function advance( state::GUIState, timer)
-    println("b")
     try 
         step_generation(state.ga_state, state.world)
         update_canvas(state)
@@ -81,8 +82,8 @@ end
 
 function canvas_button2press(widget, event, state)
     ctx = getgc(widget)
-    local pos = [event.x;event.y]
-    local t = state.world.track
+      pos = [event.x;event.y]
+      t = state.world.track
     point = find_points(t, pos)
     if point != nothing
 		filter!(e->e!=point, state.world.track.points)
@@ -94,8 +95,8 @@ function canvas_button2press(widget, event, state)
 end
 function canvas_buttonpress(widget, event, state)
     ctx = getgc(widget)
-    local pos = [event.x;event.y]
-    local t = state.world.track
+      pos = [event.x;event.y]
+      t = state.world.track
     point = find_points(t, pos)
     if point == nothing
         point = TrackPoint(pos,35)
@@ -126,8 +127,8 @@ function canvas_button1release(widget, event, state)
     end
 end
 function create_canvas(state)
-    local c = @Canvas(1600,1600)
-    local s = ScrolledWindow()
+      c = @Canvas(1600,1600)
+      s = ScrolledWindow()
     Gtk.GAccessor.size_request(s,700,600)
     push!(s,c)
     c.mouse.button1press = (w,e)->canvas_buttonpress(w,e,state)
@@ -140,9 +141,9 @@ function create_canvas(state)
     return s
 end
 function clear_screen(canvas)
-    local ctx = getgc(canvas)
-    local h = height(canvas)
-    local w = width(canvas)
+      ctx = getgc(canvas)
+      h = height(canvas)
+      w = width(canvas)
     rectangle(ctx, 0, 0, w, h)
     set_source_rgb(ctx, 1, 1, 1)
     fill(ctx)
@@ -150,7 +151,7 @@ function clear_screen(canvas)
 end
 import Gtk.draw
 function draw(canvas, t::Track, state::GUIState)
-    local ctx = getgc(canvas)
+      ctx = getgc(canvas)
     set_source_rgb(ctx, 0, 1, 0)
     for point in t.points
         arc(ctx, point.pos[1], point.pos[2], 5, 0, 2pi)
@@ -160,8 +161,8 @@ function draw(canvas, t::Track, state::GUIState)
     set_source_rgb(ctx,0.8,0.8,0.8);
     set_line_width(ctx, 1.0);
     for j=1:length(t.points)-1
-        local p1 = t.points[j].road_limits[1]
-        local p2 = t.points[j+1].road_limits[1]
+          p1 = t.points[j].road_limits[1]
+          p2 = t.points[j+1].road_limits[1]
         move_to(ctx, p1[1],p1[2]);
         line_to(ctx,  p2[1],p2[2]);
         stroke(ctx)
@@ -174,11 +175,11 @@ function draw(canvas, t::Track, state::GUIState)
 end
 function draw(canvas, car::Car, state::GUIState)
 
-    local ctx = getgc(canvas)
+      ctx = getgc(canvas)
 	save(ctx)
 	set_source_rgb(ctx,0.8,0.8,0.8);
 	set_line_width(ctx, 1.0);
-	local pos = car.pos
+	  pos = car.pos
 	w=14
 	h=24
 	translate(ctx, pos[1],pos[2])
@@ -193,14 +194,14 @@ function draw(canvas, car::Car, state::GUIState)
 		stroke(ctx)
 	end=#
 	if car.collision_point != nothing
-		local int = car.collision_point
+		  int = car.collision_point
 		arc(ctx, int[1], int[2], 5, 0, 2pi)
 		stroke(ctx)
 	end
 #=			for j=1:length(rotation_matrices)
-		local new_dir =  rotation_matrices[j]*car.dir
-		local p11= car.pos
-		local p12= car.pos + new_dir*50
+		  new_dir =  rotation_matrices[j]*car.dir
+		  p11= car.pos
+		  p12= car.pos + new_dir*50
 		move_to(ctx,p11[1],p11[2])
 		line_to(ctx,p12[1],p12[2])
 		stroke(ctx)
@@ -209,10 +210,10 @@ function draw(canvas, car::Car, state::GUIState)
 end
 function draw_scene(canvas, state::GUIState)
 
-    local ctx = getgc(canvas)
-	clear_screen(canvas)
+    ctx = getgc(canvas)
+    clear_screen(canvas)
     save(ctx)
-	draw(canvas, state.world.track, state)
+    draw(canvas, state.world.track, state)
     if length(state.world.track.points) > 0
         for car in state.world.cars
 	    draw(canvas, car,state)
