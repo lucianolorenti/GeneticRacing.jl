@@ -1,6 +1,7 @@
 using Flux
 using Statistics
 using LinearAlgebra
+using StatsBase
 export PolicyGradientState
 mutable struct PolicyGradientState <: State
     discount_factor::Float64
@@ -10,16 +11,44 @@ end
 function discount_rewards(rewards, v::Float64)
     return sum(r*(v^(i-1)) for (i, r) in enumerate(rewards))
 end
+function create_new_generation(state::PolicyGradientState, world)
+    #sort_idx = sortperm([car.best_progress for car in world.cars], rev=true)
+    #new_cars=[]
+    #n_cars = length(world.cars)
+    #renewed = round(Integer,length(world.cars)/3)
+    #for i=1:renewed
+    #    push!(new_cars, child1)
+    #	push!(new_cars, child2)
+    #end
+    #missing_cars = length(world.cars) - length(new_cars)
+    #world.cars = vcat(new_cars, world.cars[sort_idx[1:missing_cars]])
+    update_cars!(world)
+end
+
 function state_iteration(state::PolicyGradientState, carc::Car, w)
     car = carc.metadata
-    sensor_input = sense(carc, w) 
-    reward = car_progress(carc, w) * 1/minimum(sensor_input)
-    push!(car.rewards, minimum(sensor_input))
+    sensor_input = sense(carc, w)
+    progress =  (10000*car_progress(carc, w))
+    distance = minimum(sensor_input) 
+    reward = (progress * distance) / (progress + distance)
+    if carc.crash 
+        push!(car.rewards, -1)
+    else
+        push!(car.rewards, 1)
+    end
+        
     if carc.crash
         reward = discount_rewards(car.rewards, car.discount_factor)
         advantage = rewards = mean(reward)
-        Flux.train!(Flux.crossentropy, 
-                    [a.*r for (a,r) in zip(car.actions, reward)], car.inputs)
+        lossf(x, y) = Flux.crossentropy(car.model(x), y)
+        
+        y =  [a.*r for (a,r) in zip(car.actions, reward)]
+        ps = Flux.params(car.model)
+        Flux.train!(lossf,
+                    ps,
+                    zip(car.inputs,y),
+                    Flux.ADAM())
+                   
         car.inputs = []
         car.actions = []
         car.rewards = []
@@ -30,7 +59,7 @@ function advance(state::PolicyGradientState, carc::Car, dt::Float64, w)
     car = carc.metadata
     sensor_input = sense(carc, w)
     probs = car.model(sensor_input)
-    action = argmax(probs)
+    action = sample(1:length(probs), Weights(probs))
           
     if action == 1 # Forward
         carc.vel = carc.vel*1.1
@@ -49,7 +78,7 @@ function advance(state::PolicyGradientState, carc::Car, dt::Float64, w)
 end
 
 
-struct PolicyGradientCar 
+mutable struct PolicyGradientCar 
     model
     inputs::Vector
     actions::Vector
@@ -59,8 +88,8 @@ end
 
 function PolicyGradientCar(;discount_factor::Float64=0.5)
     model = Chain(
-               Dense(13,100, σ),
-               Dense(100,25, σ), 
+               Dense(13,25, σ),
+               Dense(25,25, σ), 
                Dense(25,4, σ), 
                softmax)
     return PolicyGradientCar(

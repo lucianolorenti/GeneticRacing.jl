@@ -14,6 +14,8 @@ function update_cars!(world::World)
 	world.cars[j].collision_point
 	world.cars[j].vel = v
 	world.cars[j].pos = world.track.points[1].pos + 5*world.cars[j].vel
+        world.cars[j].best_progress = 0
+        world.cars[j].it_best_progress = 0
     end
 end
 function World(state;ncars::Integer=15)

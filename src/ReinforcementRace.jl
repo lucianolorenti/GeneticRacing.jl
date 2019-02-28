@@ -57,6 +57,8 @@ function advance( state::GUIState, timer)
         update_canvas(state)
     catch e
         println(e)
+        println(stacktrace())
+        throw(e)
     end
 end
 function create_toolbar(state)
@@ -180,6 +182,7 @@ function draw(canvas, car::Car, state::GUIState)
 	set_source_rgb(ctx,0.8,0.8,0.8);
 	set_line_width(ctx, 1.0);
 	  pos = car.pos
+   
 	w=14
 	h=24
 	translate(ctx, pos[1],pos[2])

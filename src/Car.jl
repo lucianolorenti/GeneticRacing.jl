@@ -50,7 +50,7 @@ function sense(c::Car, w)
     end
     return sensed_data
 end
-function check_collision(c::Car, w)
+function check_collision(c::Car, w, iteration)
     lines_points = lines(w.track)
     α =  angle(c.vel / norm(c.vel))
     w_2 = car_width/2
@@ -65,6 +65,11 @@ function check_collision(c::Car, w)
 
     t1 = nothing
     t2 = nothing
+    if iteration > 15 && !c.crash && abs(c.it_best_progress-iteration)>50
+        c.crash = true
+        return
+    end
+
     while j<=  length(lines_points) && !c.crash
         l = lines_points[j]
         intersect = false
@@ -83,20 +88,20 @@ function check_collision(c::Car, w)
     else
         c.collision_point = nothing
     end
-	if !c.crash
-		inside_track = false
-		for j=1:length(w.track.points)-1
-			(P1, P2) = w.track.points[j].road_limits
-			(P3, P4) = w.track.points[j+1].road_limits
-			if (is_point_in_rectangle(P1, P2, P3, c.pos))
-				inside_track = inside_track | true
-				return
-			end
-		end
-		if inside_track == false
-			c.crash = true
-		end
+    if !c.crash
+	inside_track = false
+	for j=1:length(w.track.points)-1
+	    (P1, P2) = w.track.points[j].road_limits
+	    (P3, P4) = w.track.points[j+1].road_limits
+	    if (is_point_in_rectangle(P1, P2, P3, c.pos))
+		inside_track = inside_track | true
+		return
+	    end
 	end
+	if inside_track == false
+	    c.crash = true
+	end
+    end
 end
 function car_progress(c::Car, w)
     car_progress(c.pos, w)
